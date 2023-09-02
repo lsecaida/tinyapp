@@ -10,7 +10,7 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com",
 };
 
-const generateRandomString = function () {
+function generateRandomString() {
   const chars =
     "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
   let result = "";
@@ -18,11 +18,24 @@ const generateRandomString = function () {
     result += chars[Math.floor(Math.random() * chars.length)];
   }
   return result;
-};
+}
 
+// POST route to create short URL and redirect
 app.post("/urls", (req, res) => {
-  console.log(req.body); // Log the POST request body to the console
-  res.send("Ok"); // Respond with 'Ok' (we will replace this)
+  const shortURL = generateRandomString(); // Generate a new short URL
+  const longURL = req.body.longURL; // Get the long URL from the request body
+
+  // Save the shortURL-longURL pair to the urlDatabase
+  urlDatabase[shortURL] = longURL;
+
+  // Redirect to the /urls/:id page for the newly created short URL
+  res.redirect(`/urls/${shortURL}`);
+});
+
+app.use(express.urlencoded({ extended: true }));
+
+app.get("/urls/new", (req, res) => {
+  res.render("urls_new");
 });
 
 app.get("/", (req, res) => {
@@ -42,16 +55,27 @@ app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
-app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
-});
-
 app.get("/urls/:id", (req, res) => {
   const templateVars = {
     id: req.params.id,
     longURL: urlDatabase[req.params.id],
   };
   res.render("urls_show", templateVars);
+});
+
+// Redirection route
+app.get("/u/:id", (req, res) => {
+  if (!urlDatabase[req.params.id]) {
+    res
+      .status(404)
+      .send(
+        `'${req.params.id}' does not exist in the database. Check /urls for reference.`
+      );
+  } else {
+    const longURL = urlDatabase[req.params.id];
+    // Redirects to the actual website that the short URL represents
+    res.redirect(longURL);
+  }
 });
 
 app.listen(PORT, () => {
