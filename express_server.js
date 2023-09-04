@@ -32,7 +32,36 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${shortURL}`);
 });
 
-app.use(express.urlencoded({ extended: true }));
+// New POST route to handle URL deletions
+app.post("/urls/:id/delete", (req, res) => {
+  const id = req.params.id;
+
+  // Check if the URL with the given id exists in the database
+  if (urlDatabase[id]) {
+    // Delete the URL from the database
+    delete urlDatabase[id];
+    res.redirect("/urls"); // Redirect to the list of URLs after deletion
+  } else {
+    res.status(404).send("URL not found"); // Handle the case where the URL doesn't exist
+  }
+});
+
+app.post("/urls/:id/update", (req, res) => {
+  const id = req.params.id; // Get the ID from the URL parameter
+  const newLongURL = req.body.newLongURL; // Get the new long URL from the form data
+
+  // Check if the ID exists in the database
+  if (urlDatabase[id]) {
+    // Update the URL in the database with the newLongURL
+    urlDatabase[id] = newLongURL;
+
+    // Redirect to the page displaying the updated URL (you can choose an appropriate route)
+    res.redirect("/urls/" + id);
+  } else {
+    // Handle the case where the ID doesn't exist (e.g., show an error page)
+    res.status(404).send("URL not found");
+  }
+});
 
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
