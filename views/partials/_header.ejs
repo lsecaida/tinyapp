@@ -22,9 +22,11 @@
     <!-- Display Username if Available -->
     <% if (username) { %>
     <span class="navbar-text">Logged in as: <%= username %></span>
-    <% } %>
-
     <!-- Login Form -->
+    <form class="form-inline ml-auto" action="/logout" method="POST">
+      <button type="submit" class="btn btn-danger">Logout</button>
+    </form>
+    <% } else { %>
     <form class="form-inline ml-auto" action="/login" method="POST">
       <div class="form-group">
         <input
@@ -38,5 +40,6 @@
       </div>
       <button type="submit" class="btn btn-primary">Login</button>
     </form>
+    <% } %>
   </nav>
 </header>
