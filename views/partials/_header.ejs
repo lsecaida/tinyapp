@@ -18,5 +18,28 @@
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
       </div>
     </div>
+
+    <!-- Display Username if Available -->
+    <% if (username) { %>
+    <span class="navbar-text">Logged in as: <%= username %></span>
+    <!-- Login Form -->
+    <form class="form-inline ml-auto" action="/logout" method="POST">
+      <button type="submit" class="btn btn-danger">Logout</button>
+    </form>
+    <% } else { %>
+    <form class="form-inline ml-auto" action="/login" method="POST">
+      <div class="form-group">
+        <input
+          type="text"
+          class="form-control"
+          id="username"
+          name="username"
+          placeholder="Username"
+          required
+        />
+      </div>
+      <button type="submit" class="btn btn-primary">Login</button>
+    </form>
+    <% } %>
   </nav>
 </header>
